@@ -9,19 +9,46 @@ const app = express();
 app.use(cors());
 app.use(bodyParser.json());
 const user = ['sakib', 'hasan']
-const pass = 'muYRh4HC8K527OJp';
-const dbUser = 'dbUser';
-//dbConection
+const dbUser = 'dbNowfel';
+const password = 'tdcYk6UXG0RSBHfA';
+
 
 const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://dbUser:muYRh4HC8K527OJp@cluster0-gdpcz.mongodb.net/test?retryWrites=true&w=majority";
+const uri = "mongodb+srv://dbNowfel:tdcYk6UXG0RSBHfA@cluster0-jdqdu.mongodb.net/dbNowfel?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true });
 client.connect(err => {
-    const collection = client.db("onlineStore").collection("products");
-    console.log('database loaded');
-    // perform actions on the collection object
-    client.close();
+  const collection = client.db("store").collection("products");
+  console.log("Database connected....");
+  collection.insertOne({
+    name: "laptop",
+    price: 300
+}, (err, res) => {
+    console.log("inserted");
+})
+
+  client.close();
 });
+
+
+
+
+
+
+
+
+
+
+// var MongoClient = require('mongodb').MongoClient;
+
+// var uri = "mongodb://dbNowfel:tdcYk6UXG0RSBHfA@cluster0-shard-00-00-jdqdu.mongodb.net:27017,cluster0-shard-00-01-jdqdu.mongodb.net:27017,cluster0-shard-00-02-jdqdu.mongodb.net:27017/<dbname>?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true&w=majority";
+// MongoClient.connect(uri, function (err, client) {
+//     const collection = client.db("store").collection("products");
+
+//     // perform actions on the collection object
+    
+//     client.close();
+// });
+
 
 
 app.get('/', (req, res) => {
@@ -48,5 +75,5 @@ app.post('/addUser', (req, res) => {
 // });
 
 
-//const port = process.env.PORT || 4200;
-app.listen(3000, () => console.log('Listenting to port 3000'));
+
+app.listen(3033, () => console.log('Listenting to port 3000'));
