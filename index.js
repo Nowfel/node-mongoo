@@ -14,7 +14,7 @@ const password = 'tdcYk6UXG0RSBHfA';
 
 
 const MongoClient = require('mongodb').MongoClient;
-const uri = "mongodb+srv://dbNowfel:tdcYk6UXG0RSBHfA@cluster0-jdqdu.mongodb.net/dbNowfel?retryWrites=true&w=majority";
+const uri = "mongodb+srv://dbNowfel:tdcYk6UXG0RSBHfA@cluster0-jdqdu.mongodb.net/<dbName>?retryWrites=true&w=majority";
 const client = new MongoClient(uri, { useNewUrlParser: true });
 client.connect(err => {
   const collection = client.db("store").collection("products");
