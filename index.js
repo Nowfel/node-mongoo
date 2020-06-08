@@ -21,7 +21,8 @@ client.connect(err => {
   console.log("Database connected....");
   collection.insertOne({
     name: "mobile",
-    price: 300
+    price: 300,
+    stock:3
 }, (err, res) => {
     console.log("inserted");
 })
