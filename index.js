@@ -19,7 +19,12 @@ const client = new MongoClient(uri, { useNewUrlParser: true });
 client.connect(err => {
   const collection = client.db("store").collection("products");
   console.log("Database connected....");
- 
+  collection.insertOne({
+    name: "laptop",
+    price: 300
+}, (err, res) => {
+    console.log("inserted");
+})
 
   client.close();
 });
