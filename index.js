@@ -20,7 +20,7 @@ client.connect(err => {
   const collection = client.db("store").collection("products");
   console.log("Database connected....");
   collection.insertOne({
-    name: "mobile",
+    name: "pc",
     price: 300,
     stock:3
 }, (err, res) => {
