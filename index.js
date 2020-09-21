@@ -1,80 +1,129 @@
 const express = require('express');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-
-
+const MongoClient = require('mongodb').MongoClient;
+require('dotenv').config();
 
 const app = express();
 
 app.use(cors());
 app.use(bodyParser.json());
-const user = ['sakib', 'hasan']
-const dbUser = 'dbNowfel';
-const password = 'tdcYk6UXG0RSBHfA';
 
-
-const MongoClient = require('mongodb').MongoClient;
+// const dbUser = 'dbNowfel';
+// const password = 'tdcYk6UXG0RSBHfA';
 const uri = "mongodb+srv://dbNowfel:tdcYk6UXG0RSBHfA@cluster0-jdqdu.mongodb.net/<dbName>?retryWrites=true&w=majority";
-const client = new MongoClient(uri, { useNewUrlParser: true });
-client.connect(err => {
-  const collection = client.db("store").collection("products");
-  console.log("Database connected....");
-  collection.insertOne({
-    name: "pc",
-    price: 300,
-    stock:3
-}, (err, res) => {
-    console.log("inserted");
-})
 
-  client.close();
+let client = new MongoClient(uri, { useNewUrlParser: true });
+const users = ["Asad", 'Moin', 'Sabed', 'Susmita', 'Sohana', 'Sabana'];
+
+
+app.get('/products', (req, res) => {
+    client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        const collection = client.db("onlineStore").collection("products");
+        collection.find().toArray((err, documents) => {
+            if (err) {
+                console.log(err)
+                res.status(500).send({ message: err });
+            }
+            else {
+                res.send(documents);
+            }
+        });
+        client.close();
+    });
 });
 
-
-
-
-
-
-
-
-
-
-// var MongoClient = require('mongodb').MongoClient;
-
-// var uri = "mongodb://dbNowfel:tdcYk6UXG0RSBHfA@cluster0-shard-00-00-jdqdu.mongodb.net:27017,cluster0-shard-00-01-jdqdu.mongodb.net:27017,cluster0-shard-00-02-jdqdu.mongodb.net:27017/<dbname>?ssl=true&replicaSet=Cluster0-shard-0&authSource=admin&retryWrites=true&w=majority";
-// MongoClient.connect(uri, function (err, client) {
-//     const collection = client.db("store").collection("products");
-
-//     // perform actions on the collection object
-    
-//     client.close();
-// });
-
-
-
-app.get('/', (req, res) => {
-    res.send("thank");
+app.get('/orders', (req, res) => {
+    client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        const collection = client.db("onlineStore").collection("orders");
+        collection.find().toArray((err, documents) => {
+            if (err) {
+                console.log(err)
+                res.status(500).send({ message: err });
+            }
+            else {
+                res.send(documents);
+            }
+        });
+        client.close();
+    });
 });
-app.get('/users/:id', (req, res) => {
-    const id = req.params.id;
-    const name = user[id];
-    res.send({ id, name });
-})
 
+app.get('/product/:key', (req, res) => {
+    const key = req.params.key;
 
-app.post('/addUser', (req, res) => {
-    const user = req.body;
-    user.id = 2;
-    res.send(user);
-})
+    client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        const collection = client.db("onlineStore").collection("products");
+        collection.find({ key }).toArray((err, documents) => {
+            if (err) {
+                console.log(err)
+                res.status(500).send({ message: err });
+            }
+            else {
+                res.send(documents[0]);
+            }
+        });
+        client.close();
+    });
+});
 
-// app.get('/product/:id', (req, res) =>{
-//     const id = req.params.id;    
+app.post('/getProductsByKey', (req, res) => {
+    const key = req.params.key;
+    const productKeys = req.body;
+    client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        const collection = client.db("onlineStore").collection("products");
+        collection.find({ key: { $in: productKeys } }).toArray((err, documents) => {
+            if (err) {
+                console.log(err)
+                res.status(500).send({ message: err });
+            }
+            else {
+                res.send(documents);
+            }
+        });
+        client.close();
+    });
+});
 
-//     const name = users[id];
-//     res.send({id, name});
-// });
+app.post('/addProduct', (req, res) => {
+    const product = req.body;
+    client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        const collection = client.db("onlineStore").collection("products");
+        collection.insert(product, (err, result) => {
+            if (err) {
+                console.log(err)
+                res.status(500).send({ message: err });
+            }
+            else {
+                res.send(result.ops[0]);
+            }
+        });
+        client.close();
+    });
+});
 
+app.post('/placeOrder', (req, res) => {
+    const orderDetails = req.body;
+    orderDetails.orderTime = new Date();
+    client = new MongoClient(uri, { useNewUrlParser: true });
+    client.connect(err => {
+        const collection = client.db("onlineStore").collection("orders");
+        collection.insertOne(orderDetails, (err, result) => {
+            if (err) {
+                console.log(err)
+                res.status(500).send({ message: err });
+            }
+            else {
+                res.send(result.ops[0]);
+            }
+        });
+        client.close();
+    });
+});
 
-
-app.listen(3033, () => console.log('Listenting to port 3000'));
+app.listen(4200, () => console.log('Listenting to port 4200'));
